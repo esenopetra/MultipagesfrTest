@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Days Lived</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --paper: #f4ede0;
+  --ink: #1a1410;
+  --accent: #c8402a;
+  --muted: #9e8e7a;
+  --border: rgba(26,20,16,0.12);
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Subtle texture grid */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(26,20,16,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Back nav */
+.back {
+  position: fixed;
+  top: 2rem;
+  left: 2.5rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.back:hover { color: var(--ink); }
+
+.page-tag {
+  position: fixed;
+  top: 2rem;
+  right: 2.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+}
+
+/* Main layout */
+.main {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Massive watermark */
+.watermark {
+  position: absolute;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(120px, 25vw, 220px);
+  font-weight: 700;
+  font-style: italic;
+  color: rgba(200,64,42,0.05);
+  white-space: nowrap;
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  letter-spacing: -0.03em;
+  user-select: none;
+}
+
+/* Vertical line decoration */
+.vline {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 520px;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+/* Title block */
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+  animation: riseIn 0.7s ease both;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 2.8rem;
+  animation: riseIn 0.7s 0.1s ease both;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+/* Input group */
+.input-group {
+  position: relative;
+  margin-bottom: 1rem;
+  animation: riseIn 0.7s 0.2s ease both;
+}
+
+.float-label {
+  position: absolute;
+  top: -0.55rem;
+  left: 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--paper);
+  padding: 0 0.4rem;
+}
+
+input[type="date"] {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.3s;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+input[type="date"]:focus { border-color: var(--ink); }
+
+.btn {
+  width: 100%;
+  padding: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.15s;
+  margin-bottom: 3rem;
+  animation: riseIn 0.7s 0.3s ease both;
+}
+
+.btn:hover { background: #2a2016; }
+.btn:active { transform: scale(0.985); }
+
+/* Divider */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 2.5rem;
+}
+
+/* Result */
+.result {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.6s cubic-bezier(0.22,1,0.36,1);
+  animation: riseIn 0.7s 0.35s ease both;
+}
+
+.result.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.big-days {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  font-weight: 300;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.3rem;
+}
+
+.big-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+
+.stats-row {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.stat {}
+
+.stat-num {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 0.2rem;
+}
+
+.stat-lbl {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Ticker animation */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tick { animation: countUp 0.4s ease both; }
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Right column decoration */
+.side-decoration {
+  position: fixed;
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.side-deco-line {
+  height: 1px;
+  background: var(--border);
+  transition: width 1.5s ease;
+}
+
+@media (max-width: 600px) {
+  .side-decoration { display: none; }
+  .vline { display: none; }
+}
+</style>
+</head>
+<body>
+
+<a class="back" href="landing.html">← Back</a>
+<div class="page-tag">01 — Days Lived</div>
+
+<div class="side-decoration">
+  <div class="side-deco-line" id="line1" style="width:0"></div>
+  <div class="side-deco-line" id="line2" style="width:0"></div>
+  <div class="side-deco-line" id="line3" style="width:0"></div>
+</div>
+
+<div class="main">
+  <div class="watermark">LIVED</div>
+  <div class="vline"></div>
+
+  <div class="content">
+    <p class="eyebrow">A chronicle of your existence</p>
+    <h1>How many days have<br>you <em>truly</em> lived?</h1>
+
+    <div class="input-group">
+      <span class="float-label">Date of Birth</span>
+      <input type="date" id="dob" max="">
+    </div>
+
+    <button class="btn" onclick="calculate()">Calculate My Days</button>
+
+    <div class="divider"></div>
+
+    <div class="result" id="result">
+      <div class="big-days" id="daysNum">—</div>
+      <div class="big-label">days on this earth</div>
+      <div class="stats-row">
+        <div class="stat">
+          <span class="stat-num" id="yearsNum">—</span>
+          <span class="stat-lbl">Years</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="monthsNum">—</span>
+          <span class="stat-lbl">Months</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="weeksNum">—</span>
+          <span class="stat-lbl">Weeks</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="hoursNum">—</span>
+          <span class="stat-lbl">Hours</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="minsNum">—</span>
+          <span class="stat-lbl">Minutes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const dob = document.getElementById('dob');
+dob.max = new Date().toISOString().split('T')[0];
+
+// Animate side lines on load
+setTimeout(() => {
+  document.getElementById('line1').style.width = '40px';
+  document.getElementById('line2').style.width = '80px';
+  document.getElementById('line3').style.width = '24px';
+}, 300);
+
+function animateCount(el, target, duration = 1200) {
+  const start = performance.now();
+  const startVal = 0;
+  const formatted = target.toLocaleString();
+  const end = parseInt(target.toString().replace(/,/g, ''));
+
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 4);
+    const val = Math.floor(ease * end);
+    el.textContent = val.toLocaleString();
+    el.classList.add('tick');
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = formatted;
+  }
+  requestAnimationFrame(step);
+}
+
+function calculate() {
+  const val = dob.value;
+  if (!val) { dob.focus(); return; }
+
+  const birth = new Date(val);
+  const now = new Date();
+  if (birth > now) return;
+
+  const ms = now - birth;
+  const days   = Math.floor(ms / 86400000);
+  const weeks  = Math.floor(days / 7);
+  const months = Math.floor(days / 30.44);
+  const years  = Math.floor(days / 365.25);
+  const hours  = Math.floor(ms / 3600000);
+  const mins   = Math.floor(ms / 60000);
+
+  document.getElementById('result').classList.add('show');
+
+  setTimeout(() => {
+    animateCount(document.getElementById('daysNum'), days, 1400);
+    animateCount(document.getElementById('yearsNum'), years, 1000);
+    animateCount(document.getElementById('monthsNum'), months, 1100);
+    animateCount(document.getElementById('weeksNum'), weeks, 1200);
+    animateCount(document.getElementById('hoursNum'), hours, 1300);
+    animateCount(document.getElementById('minsNum'), mins, 1400);
+  }, 100);
+}
+
+dob.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluid Glass</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #06060f;
+  cursor: none;
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Back nav */
+.back {
+  position: fixed;
+  top: 2rem;
+  left: 2.5rem;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.back:hover { color: rgba(255,255,255,0.8); }
+
+.page-tag {
+  position: fixed;
+  top: 2rem;
+  right: 2.5rem;
+  z-index: 200;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+}
+
+/* Glass card center */
+.glass-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  text-align: center;
+  padding: 2.5rem 3.5rem;
+  background: rgba(255,255,255,0.055);
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 24px 80px rgba(0,0,0,0.5);
+  pointer-events: none;
+  animation: cardIn 1s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+.glass-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 0.9rem;
+}
+
+.glass-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+.glass-hint {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.2);
+}
+
+/* Cursor dot */
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: screen;
+  transition: width 0.2s, height 0.2s;
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: left 0.1s ease-out, top 0.1s ease-out, width 0.3s, height 0.3s;
+}
+
+/* Info bar bottom */
+.info-bar {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  gap: 2rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.2);
+  animation: cardIn 1s 0.6s ease both;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 20px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@keyframes barIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<a class="back" href="landing.html">← Back</a>
+<div class="page-tag">02 — Fluid Glass</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="glass-card">
+  <div class="glass-eyebrow">Interactive Surface</div>
+  <div class="glass-title">Move to disturb<br>the surface</div>
+  <div class="glass-hint">Click for a stronger ripple</div>
+</div>
+
+<div class="info-bar">
+  <div class="info-item"><div class="info-dot"></div>Wave physics active</div>
+  <div class="info-item"><div class="info-dot"></div>Move cursor to create ripples</div>
+  <div class="info-item"><div class="info-dot"></div>Click for burst</div>
+</div>
+
+<div class="cursor-dot" id="cdot"></div>
+<div class="cursor-ring" id="cring"></div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); initGrid(); });
+
+// Wave grid
+const COLS = 100, ROWS = 70;
+let grid, prev, vel;
+
+function initGrid() {
+  grid = Array.from({ length: ROWS + 2 }, () => new Float32Array(COLS + 2));
+  prev = Array.from({ length: ROWS + 2 }, () => new Float32Array(COLS + 2));
+  vel  = Array.from({ length: ROWS + 2 }, () => new Float32Array(COLS + 2));
+}
+initGrid();
+
+const DAMP = 0.988;
+const SPEED = 1.92;
+
+function stepWave() {
+  for (let y = 1; y <= ROWS; y++) {
+    for (let x = 1; x <= COLS; x++) {
+      const lap = (grid[y-1][x] + grid[y+1][x] + grid[y][x-1] + grid[y][x+1]) * 0.25 - grid[y][x];
+      vel[y][x] = (vel[y][x] + lap * SPEED) * DAMP;
+      grid[y][x] += vel[y][x];
+    }
+  }
+}
+
+function disturb(nx, ny, force, radius = 4) {
+  const gx = Math.round(nx * COLS);
+  const gy = Math.round(ny * ROWS);
+  for (let dy = -radius; dy <= radius; dy++) {
+    for (let dx = -radius; dx <= radius; dx++) {
+      const cx = gx + dx, cy = gy + dy;
+      if (cx >= 1 && cx <= COLS && cy >= 1 && cy <= ROWS) {
+        const d = Math.sqrt(dx*dx + dy*dy) / radius;
+        const falloff = Math.max(0, 1 - d * d);
+        grid[cy][cx] += force * falloff;
+      }
+    }
+  }
+}
+
+// Color palette: deep ocean purples, blues, teals
+const PALETTE = [
+  [60, 30, 180],
+  [20, 100, 220],
+  [100, 20, 200],
+  [10, 160, 200],
+  [180, 60, 220],
+];
+
+let mx = W / 2, my = H / 2;
+let lx = mx, ly = my;
+let frame = 0;
+
+// Idle disturbances
+setInterval(() => {
+  if (Math.random() < 0.6) {
+    disturb(0.1 + Math.random() * 0.8, 0.1 + Math.random() * 0.8, 1.5 + Math.random() * 2.5, 3);
+  }
+}, 600);
+
+function render() {
+  stepWave();
+  frame++;
+
+  // Dark base
+  ctx.fillStyle = '#06060f';
+  ctx.fillRect(0, 0, W, H);
+
+  const cw = W / COLS;
+  const ch = H / ROWS;
+
+  // Draw wave as colored gradient mesh
+  for (let y = 1; y <= ROWS; y++) {
+    for (let x = 1; x <= COLS; x++) {
+      const h = grid[y][x];
+      const ah = Math.abs(h);
+      if (ah < 0.04) continue;
+
+      // Color based on position + time + wave height
+      const t = ((x / COLS) * 2.3 + (y / ROWS) * 1.7 + frame * 0.004) % PALETTE.length;
+      const ci = Math.floor(t) % PALETTE.length;
+      const cn = (ci + 1) % PALETTE.length;
+      const blend = t - Math.floor(t);
+      const [r1,g1,b1] = PALETTE[ci];
+      const [r2,g2,b2] = PALETTE[cn];
+      const r = r1 + (r2-r1)*blend;
+      const g = g1 + (g2-g1)*blend;
+      const b = b1 + (b2-b1)*blend;
+
+      const alpha = Math.min(ah * 0.22, 0.85);
+      const size  = Math.min(ah * 1.2 + 0.8, cw * 1.2);
+
+      ctx.beginPath();
+      ctx.arc(x * cw - cw/2, y * ch - ch/2, size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r|0},${g|0},${b|0},${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+
+  // Glowing wave line traces
+  ctx.globalCompositeOperation = 'screen';
+  for (let y = 1; y <= ROWS; y += 2) {
+    const maxH = Math.max(...Array.from(grid[y]).map(Math.abs));
+    if (maxH < 0.5) continue;
+
+    const t = (y / ROWS + frame * 0.003) % PALETTE.length;
+    const ci = Math.floor(t) % PALETTE.length;
+    const [r,g,b] = PALETTE[ci];
+    const lineAlpha = Math.min(maxH * 0.06, 0.5);
+
+    ctx.beginPath();
+    for (let x = 1; x <= COLS; x++) {
+      const px = (x - 0.5) * cw;
+      const py = (y - 0.5) * ch + grid[y][x] * 4;
+      x === 1 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = `rgba(${r},${g},${b},${lineAlpha.toFixed(3)})`;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+  }
+
+  // Vertical traces too
+  for (let x = 1; x <= COLS; x += 3) {
+    let maxH = 0;
+    for (let y = 1; y <= ROWS; y++) maxH = Math.max(maxH, Math.abs(grid[y][x]));
+    if (maxH < 0.8) continue;
+
+    const t = (x / COLS + frame * 0.002) % PALETTE.length;
+    const ci = Math.floor(t) % PALETTE.length;
+    const [r,g,b] = PALETTE[ci];
+
+    ctx.beginPath();
+    for (let y = 1; y <= ROWS; y++) {
+      const px = (x - 0.5) * cw + grid[y][x] * 3;
+      const py = (y - 0.5) * ch;
+      y === 1 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = `rgba(${r},${g},${b},${Math.min(maxH * 0.03, 0.25).toFixed(3)})`;
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  ctx.globalCompositeOperation = 'source-over';
+
+  // Cursor radial glow
+  const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 160);
+  grd.addColorStop(0, 'rgba(120, 80, 255, 0.18)');
+  grd.addColorStop(0.5, 'rgba(40, 120, 255, 0.06)');
+  grd.addColorStop(1, 'transparent');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  requestAnimationFrame(render);
+}
+
+render();
+
+// Mouse / touch
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  const speed = Math.hypot(mx - lx, my - ly);
+
+  if (speed > 1.5) {
+    disturb(mx / W, my / H, Math.min(speed * 0.35, 9), 4);
+  }
+  lx = mx; ly = my;
+
+  document.getElementById('cdot').style.left = mx + 'px';
+  document.getElementById('cdot').style.top  = my + 'px';
+  document.getElementById('cring').style.left = mx + 'px';
+  document.getElementById('cring').style.top  = my + 'px';
+});
+
+document.addEventListener('click', e => {
+  disturb(e.clientX / W, e.clientY / H, 18, 6);
+
+  // Burst visual
+  const dot = document.getElementById('cdot');
+  dot.style.width = '20px';
+  dot.style.height = '20px';
+  setTimeout(() => { dot.style.width = '8px'; dot.style.height = '8px'; }, 300);
+});
+
+document.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  mx = t.clientX; my = t.clientY;
+  disturb(mx / W, my / H, 5, 4);
+}, { passive: false });
+
+document.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  disturb(t.clientX / W, t.clientY / H, 14, 5);
+});
+</script>
+</body>
+</html>

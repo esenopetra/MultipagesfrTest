@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Testing Environment</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0b0b0e;
+  --fg: #ddd9cf;
+  --muted: rgba(221,217,207,0.35);
+  --accent: #ff6b3d;
+  --border: rgba(255,255,255,0.06);
+  --green: #3bff8a;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Subtle dot grid */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* Ambient glow */
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.amb-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+}
+
+/* Nav */
+.back {
+  position: fixed;
+  top: 2rem;
+  left: 2.5rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.back:hover { color: rgba(255,255,255,0.7); }
+
+.page-tag {
+  position: fixed;
+  top: 2rem;
+  right: 2.5rem;
+  z-index: 100;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.18);
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+}
+
+/* Scrollable main */
+.main {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 10;
+  scrollbar-width: none;
+}
+.main::-webkit-scrollbar { display: none; }
+
+.inner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 7rem 2.5rem 5rem;
+}
+
+/* Tag chip */
+.chip {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(255,107,61,0.3);
+  padding: 0.3rem 0.8rem;
+  border-radius: 2px;
+  margin-bottom: 2.2rem;
+  animation: fadeUp 0.7s ease both;
+}
+
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.7s 0.1s ease both;
+}
+
+h1 em {
+  font-style: italic;
+  color: rgba(255,107,61,0.75);
+}
+
+.rule {
+  width: 48px;
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 2.2rem;
+  animation: fadeUp 0.7s 0.15s ease both;
+}
+
+p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  line-height: 1.85;
+  color: rgba(221,217,207,0.55);
+  margin-bottom: 1.4rem;
+  animation: fadeUp 0.7s 0.2s ease both;
+}
+
+p + p { animation-delay: 0.27s; }
+
+/* Pull quote */
+.pullquote {
+  border-left: 2px solid rgba(255,107,61,0.3);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: rgba(221,217,207,0.45);
+  animation: fadeUp 0.7s 0.3s ease both;
+}
+
+/* Meta grid */
+.meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-top: 3rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+  animation: fadeUp 0.7s 0.35s ease both;
+}
+
+.meta-item {}
+
+.meta-key {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  margin-bottom: 0.4rem;
+}
+
+.meta-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  color: rgba(221,217,207,0.6);
+}
+
+/* Pages preview strip */
+.pages-strip {
+  display: flex;
+  gap: 1rem;
+  margin-top: 3rem;
+  animation: fadeUp 0.7s 0.4s ease both;
+}
+
+.page-thumb {
+  flex: 1;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: border-color 0.3s, background 0.3s;
+  background: rgba(255,255,255,0.015);
+}
+
+.page-thumb:hover {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+}
+
+.pt-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+
+.pt-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--fg);
+  opacity: 0.7;
+  display: block;
+}
+
+/* Status badge */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.18);
+  animation: fadeUp 0.7s 0.45s ease both;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green), 0 0 20px rgba(59,255,138,0.3);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--green), 0 0 20px rgba(59,255,138,0.3); }
+  50% { opacity: 0.5; box-shadow: 0 0 4px var(--green); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Decorative number */
+.deco-num {
+  position: fixed;
+  bottom: 2rem;
+  right: 3rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 8rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.02);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="amb-orb" style="width:500px;height:400px;background:rgba(255,107,61,0.04);top:-100px;left:-100px;"></div>
+  <div class="amb-orb" style="width:400px;height:400px;background:rgba(123,92,250,0.05);bottom:-100px;right:0;"></div>
+</div>
+
+<a class="back" href="landing.html">← Back</a>
+<div class="page-tag">03 — About</div>
+<div class="deco-num">03</div>
+
+<div class="main">
+  <div class="inner">
+    <span class="chip">Testing Environment</span>
+
+    <h1>Built for<br><em>exploration,</em><br>not production</h1>
+
+    <div class="rule"></div>
+
+    <p>
+      This is a sandbox. A place where ideas are stress-tested before they harden into something real. Every pixel here is provisional. Every interaction, a hypothesis waiting to be validated or discarded.
+    </p>
+
+    <div class="pullquote">
+      "The purpose of a prototype is to learn what to build next — not to be the thing itself."
+    </div>
+
+    <p>
+      Three distinct experiences live inside this collection. A quiet calculator for contemplating the weight of time. A fluid canvas where physics becomes poetry. And this — the honest margin note, acknowledging what everything else is trying to become.
+    </p>
+
+    <p>
+      Nothing here is final. That is precisely the point.
+    </p>
+
+    <div class="meta">
+      <div class="meta-item">
+        <div class="meta-key">Purpose</div>
+        <div class="meta-val">Interface testing</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">Version</div>
+        <div class="meta-val">0.1.0 — alpha</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">Stack</div>
+        <div class="meta-val">HTML · CSS · JS</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">Experiences</div>
+        <div class="meta-val">3 total</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">Fluid engine</div>
+        <div class="meta-val">Wave PDE sim</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">Fonts</div>
+        <div class="meta-val">Cormorant · Space Mono</div>
+      </div>
+    </div>
+
+    <div class="pages-strip">
+      <a class="page-thumb" href="days-lived.html">
+        <div class="pt-num">01 ——</div>
+        <span class="pt-name">Days Lived</span>
+      </a>
+      <a class="page-thumb" href="fluid-glass.html">
+        <div class="pt-num">02 ——</div>
+        <span class="pt-name">Fluid Glass</span>
+      </a>
+      <a class="page-thumb" href="about.html">
+        <div class="pt-num">03 ——</div>
+        <span class="pt-name">About This</span>
+      </a>
+    </div>
+
+    <div class="status">
+      <div class="status-dot"></div>
+      Active · All systems nominal · Build 2025
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

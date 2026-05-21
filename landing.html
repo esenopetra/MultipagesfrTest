@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>∞ Three Experiences</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #08080f;
+  --fg: #e8e2d4;
+  --muted: rgba(232,226,212,0.35);
+  --accent1: #ff6b3d;
+  --accent2: #7b5cfa;
+  --accent3: #2fd4b0;
+  --border: rgba(255,255,255,0.07);
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: none;
+}
+
+/* Custom cursor */
+.cursor {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fg);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.3s;
+  mix-blend-mode: difference;
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(232,226,212,0.4);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: left 0.12s ease-out, top 0.12s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 500;
+}
+
+/* Grid bg */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Layout */
+.layout {
+  position: relative;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  z-index: 10;
+}
+
+/* Header */
+header {
+  padding: 2rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  animation: fadeDown 0.8s ease both;
+}
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--fg);
+  opacity: 0.6;
+}
+
+.header-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+}
+
+/* Hero center */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-weight: 300;
+  line-height: 1.05;
+  text-align: center;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.hero-title em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+.hero-title .accent-1 { color: var(--accent1); }
+.hero-title .accent-2 { color: var(--accent2); }
+.hero-title .accent-3 { color: var(--accent3); }
+
+.hero-sub {
+  font-size: 0.85rem;
+  font-weight: 200;
+  color: var(--muted);
+  text-align: center;
+  max-width: 360px;
+  line-height: 1.7;
+  margin-bottom: 4rem;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+/* Cards */
+.cards {
+  display: flex;
+  gap: 1.5rem;
+  animation: fadeUp 0.9s 0.55s ease both;
+}
+
+.card {
+  position: relative;
+  width: 220px;
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--fg);
+  overflow: hidden;
+  transition: border-color 0.4s, transform 0.4s;
+  cursor: none;
+  background: rgba(255,255,255,0.015);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card-1::before { background: radial-gradient(ellipse at top left, rgba(255,107,61,0.12), transparent 70%); }
+.card-2::before { background: radial-gradient(ellipse at top, rgba(123,92,250,0.12), transparent 70%); }
+.card-3::before { background: radial-gradient(ellipse at top right, rgba(47,212,176,0.12), transparent 70%); }
+
+.card:hover::before { opacity: 1; }
+.card-1:hover { border-color: rgba(255,107,61,0.35); }
+.card-2:hover { border-color: rgba(123,92,250,0.35); }
+.card-3:hover { border-color: rgba(47,212,176,0.35); }
+
+.card-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+}
+
+.card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.card-1 .card-icon { background: rgba(255,107,61,0.12); }
+.card-2 .card-icon { background: rgba(123,92,250,0.12); }
+.card-3 .card-icon { background: rgba(47,212,176,0.12); }
+
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 0.6rem;
+  line-height: 1.2;
+}
+
+.card-desc {
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1.8rem;
+}
+
+.card-arrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: gap 0.3s;
+}
+
+.card-1 .card-arrow { color: var(--accent1); }
+.card-2 .card-arrow { color: var(--accent2); }
+.card-3 .card-arrow { color: var(--accent3); }
+
+.card:hover .card-arrow { gap: 0.9rem; }
+
+/* Footer */
+footer {
+  padding: 1.2rem 3rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeUp 0.8s 0.7s ease both;
+}
+
+.footer-note {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.footer-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.fdot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+/* Floating ambient orbs */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 2;
+  animation: drift ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translate(0, 0); }
+  to { transform: translate(30px, -20px); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 700px) {
+  .cards { flex-direction: column; align-items: center; }
+  .card { width: 280px; }
+  header { padding: 1.5rem; }
+  footer { padding: 1rem 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curRing"></div>
+
+<!-- Ambient orbs -->
+<div class="orb" style="width:500px;height:500px;background:rgba(255,107,61,0.06);top:-150px;left:-150px;animation-duration:14s;"></div>
+<div class="orb" style="width:400px;height:400px;background:rgba(123,92,250,0.07);bottom:-100px;right:-100px;animation-duration:18s;animation-delay:-5s;"></div>
+<div class="orb" style="width:300px;height:300px;background:rgba(47,212,176,0.05);top:40%;left:50%;animation-duration:12s;animation-delay:-3s;"></div>
+
+<div class="layout">
+  <header>
+    <div class="logo">∞ moments</div>
+    <div class="header-tag">v0.1 — prototype</div>
+  </header>
+
+  <main class="hero">
+    <p class="hero-eyebrow">Three experiences · One collection</p>
+    <h1 class="hero-title">
+      <em class="accent-1">Time.</em><br>
+      <em class="accent-2">Flow.</em><br>
+      <em class="accent-3">Context.</em>
+    </h1>
+    <p class="hero-sub">A set of interactive experiences exploring time, fluid motion, and self-awareness.</p>
+
+    <div class="cards">
+      <a class="card card-1" href="days-lived.html">
+        <div class="card-num">01 ——</div>
+        <div class="card-icon">⧗</div>
+        <div class="card-title">Days<br>Lived</div>
+        <div class="card-desc">Enter your date of birth. Discover every day, hour, and week you have inhabited this earth.</div>
+        <div class="card-arrow">Enter <span>→</span></div>
+      </a>
+
+      <a class="card card-2" href="fluid-glass.html">
+        <div class="card-num">02 ——</div>
+        <div class="card-icon">◎</div>
+        <div class="card-title">Fluid<br>Glass</div>
+        <div class="card-desc">Move your cursor. Watch the surface ripple, react, and breathe like living water beneath glass.</div>
+        <div class="card-arrow">Enter <span>→</span></div>
+      </a>
+
+      <a class="card card-3" href="about.html">
+        <div class="card-num">03 ——</div>
+        <div class="card-icon">◈</div>
+        <div class="card-title">About<br>This</div>
+        <div class="card-desc">Context, intent, and metadata for this testing environment and what it is trying to become.</div>
+        <div class="card-arrow">Enter <span>→</span></div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <span class="footer-note">All systems nominal · Testing environment</span>
+    <div class="footer-dots">
+      <div class="fdot" style="background:var(--accent1)"></div>
+      <div class="fdot" style="background:var(--accent2)"></div>
+      <div class="fdot" style="background:var(--accent3)"></div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const cur = document.getElementById('cur');
+const ring = document.getElementById('curRing');
+let mx = 0, my = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx + 'px';
+  cur.style.top = my + 'px';
+  ring.style.left = mx + 'px';
+  ring.style.top = my + 'px';
+});
+
+document.querySelectorAll('.card').forEach((card, i) => {
+  const colors = ['#ff6b3d','#7b5cfa','#2fd4b0'];
+  card.addEventListener('mouseenter', () => {
+    ring.style.width = '60px';
+    ring.style.height = '60px';
+    ring.style.borderColor = colors[i] + '60';
+  });
+  card.addEventListener('mouseleave', () => {
+    ring.style.width = '36px';
+    ring.style.height = '36px';
+    ring.style.borderColor = 'rgba(232,226,212,0.4)';
+  });
+});
+</script>
+</body>
+</html>
